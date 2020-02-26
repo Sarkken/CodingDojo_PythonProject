@@ -1,15 +1,16 @@
-# Game settings and attributes
+# Game Settings and Attributes
 TITLE = "Office Escape"
-WIDTH = 1000
-HEIGHT = 700
+WIDTH = 800
+HEIGHT = 400
 FPS = 60
 
-# Player Properties
+# Player Properties Relating to Movement
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.12
-PLAYER_GRAVITY = 0.5
+PLAYER_GRAVITY = 0.98
+PLAYER_TERMINAL_VELOCITY = 15
 
-# Predefined Colors
+# Predefined Colors for Quick Reference
 WHITE = (255,255,255)
 GRAY = (128,128,128)
 BLACK = (0,0,0)
