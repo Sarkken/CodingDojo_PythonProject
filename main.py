@@ -71,7 +71,7 @@ class Game:
         self.all_sprites.update()
         
 
-        # Gather collision data
+        # Gather platform and ground collision data
         platform_collisions = pg.sprite.spritecollide(self.player, self.platforms, False)
         ground_collisions = pg.sprite.spritecollide(self.player, self.ground, False)
     
@@ -107,7 +107,6 @@ class Game:
                 self.player.is_grounded = True
                 self.player.has_doublejump = True
         # Check collisions on player running or jumping into wall
-        ### This currently prevents players from jumping through a platform they are under (think Smash Bros.)
         elif self.player.velocity.y <= 0:
             if platform_collisions:
                 # Check if jumping into underside of platform/object

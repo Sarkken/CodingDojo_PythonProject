@@ -76,14 +76,14 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.move_tracker = 0
+
 
 class MovingPlatformVertical(pg.sprite.Sprite): 
     # Main class for all platforms. Will likely work best for the bar graph sprites, may need a 
     # subclass or separate class for "ground" that players can walk up, i.e. the line graph in the 
     # example image. 
     
-    def __init__ (self, x, y, w, h):
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -92,7 +92,7 @@ class MovingPlatformVertical(pg.sprite.Sprite):
         self.rect.y = y
         self.top_surface = vector(x, y)
         self.move_tracker = 0
-        self.velocity = 1
+        self.velocity = v
 
     def update (self):
         #testing moving platforms
@@ -105,12 +105,13 @@ class MovingPlatformVertical(pg.sprite.Sprite):
         self.move_tracker += 1
         self.rect.midtop = self.top_surface
 
+
 class MovingPlatformHorizontal(pg.sprite.Sprite): 
     # Main class for all platforms. Will likely work best for the bar graph sprites, may need a 
     # subclass or separate class for "ground" that players can walk up, i.e. the line graph in the 
     # example image. 
     
-    def __init__ (self, x, y, w, h):
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -119,7 +120,7 @@ class MovingPlatformHorizontal(pg.sprite.Sprite):
         self.rect.y = y
         self.top_surface = vector(x, y)
         self.move_tracker = 0
-        self.velocity = 1
+        self.velocity = v
 
     def update (self):
         #testing moving platforms
