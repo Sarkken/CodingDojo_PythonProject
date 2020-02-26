@@ -9,7 +9,7 @@ class Player (pg.sprite.Sprite):
     
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((30,40))
+        self.image = pg.Surface((PLAYER_WIDTH,PLAYER_HEIGHT))
         self.image.fill(RED)
         self.game = game
         self.rect = self.image.get_rect()
@@ -78,7 +78,7 @@ class Platform(pg.sprite.Sprite):
         self.rect.y = y
         self.move_tracker = 0
 
-class MovingPlatform(pg.sprite.Sprite): 
+class MovingPlatformVertical(pg.sprite.Sprite): 
     # Main class for all platforms. Will likely work best for the bar graph sprites, may need a 
     # subclass or separate class for "ground" that players can walk up, i.e. the line graph in the 
     # example image. 

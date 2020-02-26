@@ -29,13 +29,13 @@ class Game:
         wall_plat = Platform(-20, HEIGHT-150, 60, 150)
         self.all_sprites.add(wall_plat)
         self.platforms.add(wall_plat)
-        jump_over_1 = Platform(int(WIDTH*.75), HEIGHT-60, 80, 20)
-        self.all_sprites.add(jump_over_1)
-        self.platforms.add(jump_over_1)
-        jump_over_2 = MovingPlatform(int(WIDTH*.5), HEIGHT-120, 80, 20)
-        self.all_sprites.add(jump_over_2)
-        self.platforms.add(jump_over_2)
-        self.moving_platforms.add(jump_over_2)
+        plat1 = Platform(int(WIDTH*.75), HEIGHT-60, 80, 20)
+        self.all_sprites.add(plat1)
+        self.platforms.add(plat1)
+        plat2 = MovingPlatformVertical(int(WIDTH*.5), HEIGHT-120, 80, 20)
+        self.all_sprites.add(plat2)
+        self.platforms.add(plat2)
+        self.moving_platforms.add(plat2)
 
     def run (self):
         # Runs the game
@@ -97,14 +97,22 @@ class Game:
                 self.player.has_doublejump = True
         # Check collisions on player running or jumping into wall
         ### This currently prevents players from jumping through a platform they are under (think Smash Bros.)
-        # elif self.player.velocity.x != 0:
-        #     if collisions:
-        #         # Check if jumping left into a wall
-        #         if self.player.rect.left < collisions[0].rect.right and self.player.rect.left > collisions[0].rect.left:
-        #             self.player.position.x = collisions[0].rect.right + 20
-        #         # Check if jumping right into a wall
-        #         elif self.player.rect.right > collisions[0].rect.left and self.player.rect.right < collisions[0].rect.right:
-        #             self.player.position.x = collisions[0].rect.left - 20 
+        elif self.player.velocity.x != 0 and self.player.velocity.y <= 0:
+            if collisions:
+                # Check if jumping into underside of platform/object
+                if self.player.rect.top <= collisions[0].rect.bottom and self.player.rect.bottom > collisions[0].rect.bottom:
+                    self.player.position.y = collisions[0].rect.bottom + PLAYER_HEIGHT
+                    self.player.velocity.y = 0 
+                # Check if jumping left into a wall
+                elif self.player.rect.left < collisions[0].rect.right and self.player.rect.left > collisions[0].rect.left:
+                    self.player.position.x = collisions[0].rect.right + 20
+                    self.player.velocity.x = 0
+                    self.player.acceleration.x = 0
+                # Check if jumping right into a wall
+                elif self.player.rect.right > collisions[0].rect.left and self.player.rect.right < collisions[0].rect.right:
+                    self.player.position.x = collisions[0].rect.left - 20 
+                    self.player.acceleration.x = 0
+
 
 
 

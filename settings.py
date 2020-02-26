@@ -5,6 +5,8 @@ HEIGHT = 400
 FPS = 60
 
 # Player Properties Relating to Movement
+PLAYER_HEIGHT = 40
+PLAYER_WIDTH = 30
 PLAYER_ACC = 0.5
 PLAYER_FRICTION = -0.12
 PLAYER_GRAVITY = 0.98
