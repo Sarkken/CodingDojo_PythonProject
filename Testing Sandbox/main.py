@@ -1,6 +1,7 @@
 import pygame as pg
 from settings import *
 from sprites import *
+import time
 
 
 
@@ -121,6 +122,12 @@ class Game:
                 elif self.player.rect.right > platform_collisions[0].rect.left and self.player.rect.right < platform_collisions[0].rect.right:
                     self.player.position.x = platform_collisions[0].rect.left - 20 
                     self.player.acceleration.x = 0
+
+        if self.player.position.x >= 760 and self.player.position.y >= 150:
+            self.WinScreen(BLUE)
+            pg.display.update()
+            time.sleep(2)
+            game_end()
 
     def draw (self):
         # Draws all the updates
@@ -298,6 +305,14 @@ class Game:
 
             pg.display.update()
             self.clock.tick(FPS)
+
+                # Endgame screen
+    def WinScreen(self, color):
+        smallText = pg.font.Font("freesansbold.ttf",30)
+        TextSurf = smallText.render("WINNER WINNER", True, WHITE)
+        TextRect = TextSurf.get_rect()
+        TextRect.center = ((WIDTH/2),(HEIGHT/2))
+        self.screen.blit(TextSurf, TextRect)
 
         
 
