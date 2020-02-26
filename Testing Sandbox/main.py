@@ -172,7 +172,7 @@ class Game:
             if 460+200 > mouse[0] > 460 and 275+50 > mouse[1] > 275:
                 pg.draw.rect(self.screen, BRIGHT_RED,(460,275,200,50))
                 if click[0] == 1:
-                   self.running = False              
+                   pg.quit()              
             else:
                 pg.draw.rect(self.screen, RED,(460,275,200,50))
 
