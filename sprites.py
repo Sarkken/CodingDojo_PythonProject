@@ -97,9 +97,9 @@ class MovingPlatform(pg.sprite.Sprite):
         #testing moving platforms
         if self.move_tracker < 0:
             self.top_surface.y += 1
-        elif 0 < self.move_tracker < 30:
+        elif 0 < self.move_tracker < 60:
             self.top_surface.y -= 1
-        elif self.move_tracker >= 30:
-            self.move_tracker = -30
+        elif self.move_tracker >= 60:
+            self.move_tracker = -60
         self.move_tracker += 1
         self.rect.midtop = self.top_surface

@@ -69,7 +69,6 @@ class Game:
     
         # Checks collisions on player falling
         if self.player.velocity.y > 0:
-            self.player.is_airborn = True
             # Check for non-ground platform collisions first.
             if collisions:
                 # Check to see if the player cleared the platform
