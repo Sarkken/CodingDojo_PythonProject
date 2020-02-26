@@ -19,23 +19,31 @@ class Game:
         # Starts a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
-        self.moving_platforms = pg.sprite.Group()
+        self.moving_platforms_vertical = pg.sprite.Group()
+        self.moving_platforms_horizontal = pg.sprite.Group()
         self.ground = pg.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
         ground_plat = Platform(0, HEIGHT-20, WIDTH, 20)
         self.all_sprites.add(ground_plat)
         self.ground.add(ground_plat)
-        wall_plat = Platform(-20, HEIGHT-150, 60, 150)
-        self.all_sprites.add(wall_plat)
-        self.platforms.add(wall_plat)
-        plat1 = Platform(int(WIDTH*.75), HEIGHT-60, 80, 20)
+        wall_plat1 = Platform(-20, HEIGHT-250, 60, 250)
+        self.all_sprites.add(wall_plat1)
+        self.platforms.add(wall_plat1)
+        wall_plat2 = Platform(WIDTH-40, HEIGHT-250, 60, 250)
+        self.all_sprites.add(wall_plat2)
+        self.platforms.add(wall_plat2)
+        plat1 = Platform(int(WIDTH*.25), HEIGHT-60, 80, 20)
         self.all_sprites.add(plat1)
         self.platforms.add(plat1)
         plat2 = MovingPlatformVertical(int(WIDTH*.5), HEIGHT-120, 80, 20)
         self.all_sprites.add(plat2)
         self.platforms.add(plat2)
-        self.moving_platforms.add(plat2)
+        self.moving_platforms_vertical.add(plat2)
+        plat3 = MovingPlatformHorizontal(int(WIDTH*.75), HEIGHT-120, 80, 20)
+        self.all_sprites.add(plat3)
+        self.platforms.add(plat3)
+        self.moving_platforms_horizontal.add(plat3)
 
     def run (self):
         # Runs the game
@@ -64,28 +72,31 @@ class Game:
         
 
         # Gather collision data
-        collisions = pg.sprite.spritecollide(self.player, self.platforms, False)
+        platform_collisions = pg.sprite.spritecollide(self.player, self.platforms, False)
         ground_collisions = pg.sprite.spritecollide(self.player, self.ground, False)
     
         # Checks collisions on player falling
         if self.player.velocity.y > 0:
             # Check for non-ground platform collisions first.
-            if collisions:
+            if platform_collisions:
                 # Check to see if the player cleared the platform
-                if self.player.position.y <= (collisions[0].rect.top + 15):
+                if self.player.position.y <= (platform_collisions[0].rect.top + 15):
                     # Positions the player on the first platform they've collided with, and set them to be "grounded".
-                    self.player.position.y = collisions[0].rect.top
+                    self.player.position.y = platform_collisions[0].rect.top
                     self.player.velocity.y = 0
                     self.player.is_airborn = False
                     self.player.is_grounded = True
                     self.player.has_doublejump = True
+                    # Check if platform is moving horizontally
+                    if platform_collisions[0] in self.moving_platforms_horizontal:
+                        self.player.position.x += platform_collisions[0].velocity
                 # Check if running left into a wall
-                elif self.player.rect.left < collisions[0].rect.right and self.player.rect.left > collisions[0].rect.left:
-                    self.player.position.x = collisions[0].rect.right + 20
+                elif self.player.rect.left < platform_collisions[0].rect.right and self.player.rect.left > platform_collisions[0].rect.left:
+                    self.player.position.x = platform_collisions[0].rect.right + 20
                     self.player.position.y -= 7
                 # Check if running right into a wall
-                elif self.player.rect.right > collisions[0].rect.left and self.player.rect.right < collisions[0].rect.right:
-                    self.player.position.x = collisions[0].rect.left - 20 
+                elif self.player.rect.right > platform_collisions[0].rect.left and self.player.rect.right < platform_collisions[0].rect.right:
+                    self.player.position.x = platform_collisions[0].rect.left - 20 
                     self.player.position.y -= 7 
             # Check for ground collision ater checking for platforms.
             if ground_collisions:
@@ -97,20 +108,20 @@ class Game:
                 self.player.has_doublejump = True
         # Check collisions on player running or jumping into wall
         ### This currently prevents players from jumping through a platform they are under (think Smash Bros.)
-        elif self.player.velocity.x != 0 and self.player.velocity.y <= 0:
-            if collisions:
+        elif self.player.velocity.y <= 0:
+            if platform_collisions:
                 # Check if jumping into underside of platform/object
-                if self.player.rect.top <= collisions[0].rect.bottom and self.player.rect.bottom > collisions[0].rect.bottom:
-                    self.player.position.y = collisions[0].rect.bottom + PLAYER_HEIGHT
+                if self.player.rect.top <= platform_collisions[0].rect.bottom and self.player.rect.bottom > platform_collisions[0].rect.bottom:
+                    self.player.position.y = platform_collisions[0].rect.bottom + PLAYER_HEIGHT
                     self.player.velocity.y = 0 
                 # Check if jumping left into a wall
-                elif self.player.rect.left < collisions[0].rect.right and self.player.rect.left > collisions[0].rect.left:
-                    self.player.position.x = collisions[0].rect.right + 20
+                elif self.player.rect.left < platform_collisions[0].rect.right and self.player.rect.left > platform_collisions[0].rect.left:
+                    self.player.position.x = platform_collisions[0].rect.right + 20
                     self.player.velocity.x = 0
                     self.player.acceleration.x = 0
                 # Check if jumping right into a wall
-                elif self.player.rect.right > collisions[0].rect.left and self.player.rect.right < collisions[0].rect.right:
-                    self.player.position.x = collisions[0].rect.left - 20 
+                elif self.player.rect.right > platform_collisions[0].rect.left and self.player.rect.right < platform_collisions[0].rect.right:
+                    self.player.position.x = platform_collisions[0].rect.left - 20 
                     self.player.acceleration.x = 0
 
 

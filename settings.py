@@ -12,6 +12,8 @@ PLAYER_FRICTION = -0.12
 PLAYER_GRAVITY = 0.98
 PLAYER_TERMINAL_VELOCITY = 15
 
+# Platform Properties Relating to Movement (and possibly other stuff?)
+
 # Predefined Colors for Quick Reference
 WHITE = (255,255,255)
 GRAY = (128,128,128)
