@@ -35,11 +35,13 @@ class Player (pg.sprite.Sprite):
                 self.velocity.y = -15
                 self.is_grounded = False
                 self.is_airborn = True
+                self.game.jump_sound.play()
         # If player isn't grounded, check if they have a double-jump available.
         elif self.is_airborn:
             if self.has_doublejump:
                 self.velocity.y = -12
                 self.has_doublejump = False
+                self.game.jump_sound.play()
 
     def update(self):
         self.acceleration = vector(0,PLAYER_GRAVITY)
