@@ -1,6 +1,10 @@
 import pygame as pg
 from settings import *
 from sprites import *
+from os import path
+
+# Asset Folder Paths
+image_folder = path.join(path.dirname(__file__), 'images')
 
 
 
@@ -21,6 +25,7 @@ class Game:
         self.platforms = pg.sprite.Group()
         self.moving_platforms_vertical = pg.sprite.Group()
         self.moving_platforms_horizontal = pg.sprite.Group()
+        self.graph_platforms = pg.sprite.Group()
         self.ground = pg.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
@@ -33,17 +38,22 @@ class Game:
         wall_plat2 = Platform(WIDTH-40, HEIGHT-250, 60, 250)
         self.all_sprites.add(wall_plat2)
         self.platforms.add(wall_plat2)
-        plat1 = Platform(int(WIDTH*.25), HEIGHT-60, 80, 20)
+        plat1 = Platform(int(WIDTH*.3), HEIGHT-60, 80, 20)
         self.all_sprites.add(plat1)
         self.platforms.add(plat1)
-        plat2 = MovingPlatformVertical(int(WIDTH*.5), HEIGHT-120, 80, 20)
+        plat2 = MovingPlatformVertical(int(WIDTH*.6), HEIGHT-120, 80, 20)
         self.all_sprites.add(plat2)
         self.platforms.add(plat2)
         self.moving_platforms_vertical.add(plat2)
-        plat3 = MovingPlatformHorizontal(int(WIDTH*.75), HEIGHT-120, 80, 20)
+        plat3 = MovingPlatformHorizontal(int(WIDTH*.85), HEIGHT-120, 80, 20)
         self.all_sprites.add(plat3)
         self.platforms.add(plat3)
         self.moving_platforms_horizontal.add(plat3)
+        graph_plat = GraphPlatform(100, HEIGHT-150, 150, 150)
+        self.all_sprites.add(graph_plat)
+        # self.platforms.add(graph_plat)
+        self.graph_platforms.add(graph_plat)
+      
 
     def run (self):
         # Runs the game
@@ -74,12 +84,24 @@ class Game:
         # Gather platform and ground collision data
         platform_collisions = pg.sprite.spritecollide(self.player, self.platforms, False)
         ground_collisions = pg.sprite.spritecollide(self.player, self.ground, False)
-    
+        ramp_collision = pg.sprite.spritecollide(self.player, self.graph_platforms, False, pg.sprite.collide_mask)
+
         # Checks collisions on player falling
         if self.player.velocity.y > 0:
+            # Check to see if the player cleared the platform
+            # if platform_collisions[0] in self.graph_platforms:
+            # Can you stand on a ramp?
+            # ramp_collision = pg.sprite.spritecollide(self.player, self.graph_platforms, False, pg.sprite.collide_mask)
+            if ramp_collision:
+                # self.player.position.y = ramp_collision[0].
+                self.player.velocity.y = 0
+                relative_x = self.player.rect.x - ramp_collision[0].rect.x
+                self.player.position.y = HEIGHT - (relative_x + 15)
+                self.player.is_airborn = False
+                self.player.is_grounded = True
+                self.player.has_doublejump = True
             # Check for non-ground platform collisions first.
-            if platform_collisions:
-                # Check to see if the player cleared the platform
+            elif platform_collisions:
                 if self.player.position.y <= (platform_collisions[0].rect.top + 15):
                     # Positions the player on the first platform they've collided with, and set them to be "grounded".
                     self.player.position.y = platform_collisions[0].rect.top
@@ -109,8 +131,17 @@ class Game:
         # Check collisions on player running or jumping into wall
         elif self.player.velocity.y <= 0:
             if platform_collisions:
+                # Can you stand on a ramp?
+                if ramp_collision:
+                    # self.player.position.y = ramp_collision[0].
+                    self.player.velocity.y = 0
+                    relative_x = self.player.rect.x - ramp_collision[0].rect.x
+                    self.player.position.y = HEIGHT - (relative_x + 15)
+                    self.player.is_airborn = False
+                    self.player.is_grounded = True
+                    self.player.has_doublejump = True
                 # Check if jumping into underside of platform/object
-                if self.player.rect.top <= platform_collisions[0].rect.bottom and self.player.rect.bottom > platform_collisions[0].rect.bottom:
+                elif self.player.rect.top <= platform_collisions[0].rect.bottom and self.player.rect.bottom > platform_collisions[0].rect.bottom:
                     self.player.position.y = platform_collisions[0].rect.bottom + PLAYER_HEIGHT
                     self.player.velocity.y = 0 
                 # Check if jumping left into a wall
@@ -128,7 +159,7 @@ class Game:
 
     def draw (self):
         # Draws all the updates
-        self.screen.fill(BLACK)
+        self.screen.fill(GRAY)
         self.all_sprites.draw(self.screen)
         pg.display.flip()
         
