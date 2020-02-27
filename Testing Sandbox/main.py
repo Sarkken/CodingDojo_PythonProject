@@ -127,7 +127,7 @@ class Game:
             self.WinScreen(BLUE)
             pg.display.update()
             time.sleep(2)
-            game_end()
+            self.game_end()
 
     def draw (self):
         # Draws all the updates
