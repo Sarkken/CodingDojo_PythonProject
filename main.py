@@ -17,48 +17,113 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.clock = pg.time.Clock()
         self.running = True
-        self.jump_sound = pg.mixer.Sound('sounds\Jump10.wav')
+        self.jump_sound = pg.mixer.Sound(path.join(audio_folder,'Jump10.wav'))
         
 
     def new (self):
         # Starts a new game
+
+        pg.mixer.music.load(path.join(audio_folder,"happytune.wav"))
+        pg.mixer.music.play(loops=-1)
+
         self.all_sprites = pg.sprite.Group()
+        self.out_of_bounds = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
         self.moving_platforms_vertical = pg.sprite.Group()
         self.moving_platforms_horizontal = pg.sprite.Group()
         self.graph_platforms = pg.sprite.Group()
-        self.ground = pg.sprite.Group()
         self.player = Player(self)
+        self.mobs = pg.sprite.Group()
+
         self.all_sprites.add(self.player)
-        ground_plat = Platform(0, HEIGHT-20, WIDTH, 20)
-        self.all_sprites.add(ground_plat)
-        self.ground.add(ground_plat)
-        wall_plat1 = Platform(-20, HEIGHT-250, 60, 250)
-        self.all_sprites.add(wall_plat1)
-        self.platforms.add(wall_plat1)
-        wall_plat2 = Platform(WIDTH-40, HEIGHT-250, 60, 250)
-        self.all_sprites.add(wall_plat2)
-        self.platforms.add(wall_plat2)
-        plat1 = Platform(int(WIDTH*.3), HEIGHT-60, 80, 20)
-        self.all_sprites.add(plat1)
-        self.platforms.add(plat1)
-        plat2 = MovingPlatformVertical(int(WIDTH*.6), HEIGHT-120, 80, 20)
-        self.all_sprites.add(plat2)
-        self.platforms.add(plat2)
-        self.moving_platforms_vertical.add(plat2)
-        plat3 = MovingPlatformHorizontal(int(WIDTH*.85), HEIGHT-120, 80, 20)
-        self.all_sprites.add(plat3)
-        self.platforms.add(plat3)
-        self.moving_platforms_horizontal.add(plat3)
-        graph_plat = GraphPlatform(100, HEIGHT-150, 150, 150)
-        self.all_sprites.add(graph_plat)
-        # self.platforms.add(graph_plat)
-        self.graph_platforms.add(graph_plat)
-        mob1 = Mob(int(WIDTH*.4), HEIGHT-60, 80, 20, 600)
-        self.all_sprites.add(mob1)
-        self.mobs.add(mob1)
-        pg.mixer.music.load("sounds\happytune.wav")
+
+        # Outer bounding to prevent player from leaving the playspace
+        bound_left = Platform(-40, 0, 40, HEIGHT)
+        bound_right = Platform(WIDTH, 0, 40, HEIGHT)
+        bound_floor = Platform(-40, HEIGHT+20, WIDTH+80, 40)
+        self.all_sprites.add(bound_left)
+        self.platforms.add(bound_left)
+        self.all_sprites.add(bound_right)
+        self.platforms.add(bound_right)
+        self.all_sprites.add(bound_floor)
+        self.platforms.add(bound_floor)
+        self.out_of_bounds.add(bound_floor)
+
+        # Platforms that player can jump and run on
+        p1 = Platform(0, 500, 160, 500)
+        p2 = Platform(160, 600, 400, 500)
+        p3 = Platform(560, 600, 320, 500)
+        p4 = Platform(880, 600, 240, 500)
+        p5 = MovingPlatformVertical(1200, 600, 80, 600)
+        p6 = MovingPlatformVertical(1360, 500, 80, 600, i=-1)
+        p7 = MovingPlatformVertical(1520, 400, 80, 600)
+        p8 = MovingPlatformHorizontal(1200, 300, 160, 30, i=-1)
+        p9 = MovingPlatformHorizontal(1520, 150, 160, 30, i=1)
+        p10 = Platform(0, 600, 160, 400)
+        self.all_sprites.add(p1)
+        self.all_sprites.add(p2)
+        self.all_sprites.add(p3)
+        self.all_sprites.add(p4)
+        self.all_sprites.add(p5)
+        self.all_sprites.add(p6)
+        self.all_sprites.add(p7)
+        self.all_sprites.add(p8)
+        self.all_sprites.add(p9)
+        self.all_sprites.add(p10)
+        self.platforms.add(p1)
+        self.platforms.add(p2)
+        self.platforms.add(p3)
+        self.platforms.add(p4)
+        self.platforms.add(p5)
+        self.platforms.add(p6)
+        self.platforms.add(p7)
+        self.platforms.add(p8)
+        self.platforms.add(p9)
+        self.platforms.add(p10)
+        self.moving_platforms_vertical.add(p5)
+        self.moving_platforms_vertical.add(p6)
+        self.moving_platforms_vertical.add(p7)
+        self.moving_platforms_horizontal.add(p8)
+        self.moving_platforms_horizontal.add(p9)
+
+       ### OLD LEVEL LAYOUT ###
+        # self.all_sprites = pg.sprite.Group()
+        # self.platforms = pg.sprite.Group()
+        # self.mobs = pg.sprite.Group()
+        # self.moving_platforms_vertical = pg.sprite.Group()
+        # self.moving_platforms_horizontal = pg.sprite.Group()
+        # self.graph_platforms = pg.sprite.Group()
+        # self.ground = pg.sprite.Group()
+        # self.player = Player(self)
+        # self.all_sprites.add(self.player)
+        # ground_plat = Platform(0, HEIGHT-20, WIDTH, 20)
+        # self.all_sprites.add(ground_plat)
+        # self.ground.add(ground_plat)
+        # wall_plat1 = Platform(-20, HEIGHT-250, 60, 250)
+        # self.all_sprites.add(wall_plat1)
+        # self.platforms.add(wall_plat1)
+        # wall_plat2 = Platform(WIDTH-40, HEIGHT-250, 60, 250)
+        # self.all_sprites.add(wall_plat2)
+        # self.platforms.add(wall_plat2)
+        # plat1 = Platform(int(WIDTH*.3), HEIGHT-60, 80, 20)
+        # self.all_sprites.add(plat1)
+        # self.platforms.add(plat1)
+        # plat2 = MovingPlatformVertical(int(WIDTH*.6), HEIGHT-120, 80, 20)
+        # self.all_sprites.add(plat2)
+        # self.platforms.add(plat2)
+        # self.moving_platforms_vertical.add(plat2)
+        # plat3 = MovingPlatformHorizontal(int(WIDTH*.85), HEIGHT-120, 80, 20)
+        # self.all_sprites.add(plat3)
+        # self.platforms.add(plat3)
+        # self.moving_platforms_horizontal.add(plat3)
+        # graph_plat = GraphPlatform(100, HEIGHT-150, 150, 150)
+        # self.all_sprites.add(graph_plat)
+        # # self.platforms.add(graph_plat)
+        # self.graph_platforms.add(graph_plat)
+        # mob1 = Mob(int(WIDTH*.4), HEIGHT-60, 80, 20, 600)
+        # self.all_sprites.add(mob1)
+        # self.mobs.add(mob1)
+
       
 
     def run (self):
@@ -89,11 +154,14 @@ class Game:
         self.all_sprites.update()
         
 
-        # Gather platform and ground collision data
+        # Gather platform and bounding collision data
+        bounding_collisions = pg.sprite.spritecollide(self.player, self.out_of_bounds, False)
         platform_collisions = pg.sprite.spritecollide(self.player, self.platforms, False)
-        ground_collisions = pg.sprite.spritecollide(self.player, self.ground, False)
         ramp_collision = pg.sprite.spritecollide(self.player, self.graph_platforms, False, pg.sprite.collide_mask)
 
+        # Check if player fell out of bounds
+        if bounding_collisions:
+            self.game_over()
 
         #mobs hit player
         hits = pg.sprite.spritecollide(self.player, self.mobs, False)
@@ -128,7 +196,7 @@ class Game:
                     self.player.has_doublejump = True
                     # Check if platform is moving horizontally
                     if platform_collisions[0] in self.moving_platforms_horizontal:
-                        self.player.position.x += platform_collisions[0].velocity
+                        self.player.position.x += platform_collisions[0].drag
                 # Check if running left into a wall
                 elif self.player.rect.left < platform_collisions[0].rect.right and self.player.rect.left > platform_collisions[0].rect.left:
                     self.player.position.x = platform_collisions[0].rect.right + 20
@@ -137,14 +205,14 @@ class Game:
                 elif self.player.rect.right > platform_collisions[0].rect.left and self.player.rect.right < platform_collisions[0].rect.right:
                     self.player.position.x = platform_collisions[0].rect.left - 20 
                     self.player.position.y -= 7 
-            # Check for ground collision ater checking for platforms.
-            if ground_collisions:
-                # Positions the player on the ground platform they've collided with, and set them to be "grounded".
-                self.player.position.y = ground_collisions[0].rect.top
-                self.player.velocity.y = 0
-                self.player.is_airborn = False
-                self.player.is_grounded = True
-                self.player.has_doublejump = True
+            # # Check for ground collision ater checking for platforms.
+            # if ground_collisions:
+            #     # Positions the player on the ground platform they've collided with, and set them to be "grounded".
+            #     self.player.position.y = ground_collisions[0].rect.top
+            #     self.player.velocity.y = 0
+            #     self.player.is_airborn = False
+            #     self.player.is_grounded = True
+            #     self.player.has_doublejump = True
         # Check collisions on player running or jumping into wall
         elif self.player.velocity.y <= 0:
             if platform_collisions:
@@ -246,7 +314,7 @@ class Game:
         pg.mixer.music.fadeout(500)
 
     def game_end(self):
-        pg.mixer.music.load("sounds\enchanted.mp3")
+        pg.mixer.music.load(path.join(audio_folder,"enchanted.mp3"))
         pg.mixer.music.play(loops=-1)
 
         intro = True
@@ -361,7 +429,7 @@ class Game:
         pg.mixer.music.fadeout(500)
 
     def game_over(self):
-        pg.mixer.music.load("sounds\Death.mp3")
+        pg.mixer.music.load(path.join(audio_folder,"Death.mp3"))
         pg.mixer.music.play(loops=-1)
         intro = True
         while intro:
@@ -392,8 +460,6 @@ class Game:
             if (WIDTH/2) - 500+400 > mouse[0] > (WIDTH/2) - 500 and 575+100 > mouse[1] > 575:
                 pg.draw.rect(self.screen, GREEN,((WIDTH/2) - 500,575,400,100))
                 if click[0] == 1:
-                    pg.mixer.music.load(path.join(audio_folder, "happy_adveture.mp3"))
-                    pg.mixer.music.play(loops=-1)
                     self.new()
                     self.run()
             else:
@@ -439,7 +505,7 @@ def draw_player_health(surf, x, y, pct):
     else:
         col= RED
     pg.draw.rect(surf, col, fill_rect)
-    pg.draw.rect(surf, WHITE, outline_rect, 2)
+    pg.draw.rect(surf, BLACK, outline_rect, 2)
 
 
 game = Game()
