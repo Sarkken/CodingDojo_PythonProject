@@ -80,7 +80,6 @@ class Player (pg.sprite.Sprite):
         calc_move = self.velocity + 0.5 * self.acceleration
         if abs(self.velocity.x) < 0.1:
             self.velocity.x = 0
-        self.position += self.velocity + 0.5 * self.acceleration
         # Prevent moving too fast from gravity
         if (self.velocity.y + 0.5 * self.acceleration.y) > PLAYER_TERMINAL_VELOCITY:
             calc_move.y = PLAYER_TERMINAL_VELOCITY
