@@ -40,7 +40,7 @@ class Game:
         # Outer bounding to prevent player from leaving the playspace
         bound_left = Platform(-40, 0, 40, HEIGHT)
         bound_right = Platform(WIDTH, 0, 40, HEIGHT)
-        bound_floor = Platform(-40, HEIGHT+20, WIDTH+80, 40)
+        bound_floor = Platform(-200, HEIGHT+20, WIDTH+400, 40)
         self.all_sprites.add(bound_left)
         self.platforms.add(bound_left)
         self.all_sprites.add(bound_right)
@@ -59,7 +59,7 @@ class Game:
         p7 = MovingPlatformVertical(1520, 400, 80, 600)
         p8 = MovingPlatformHorizontal(1200, 300, 160, 30, i=-1)
         p9 = MovingPlatformHorizontal(1520, 150, 160, 30, i=1)
-        p10 = Platform(0, 600, 160, 400)
+        p10 = Platform(1550, 50, 50, 20)
         self.all_sprites.add(p1)
         self.all_sprites.add(p2)
         self.all_sprites.add(p3)
@@ -85,6 +85,12 @@ class Game:
         self.moving_platforms_vertical.add(p7)
         self.moving_platforms_horizontal.add(p8)
         self.moving_platforms_horizontal.add(p9)
+
+        # Enemy(s) in the level
+        e1 = Mob(560, 600, 320)
+        self.all_sprites.add(e1)
+        self.mobs.add(e1)
+
 
        ### OLD LEVEL LAYOUT ###
         # self.all_sprites = pg.sprite.Group()
@@ -173,7 +179,11 @@ class Game:
                 self.game_over()
 
             if hits:
-                self.player.position += vector(MOB_KNOCKBACK, 0)
+                if self.player.position.x < hits[0].position.x:
+                    self.player.position += vector(-MOB_KNOCKBACK, 0)
+                else:
+                    self.player.position += vector(MOB_KNOCKBACK, 0)
+
 
         # Checks collisions on player falling
         if self.player.velocity.y > 0:
@@ -243,8 +253,9 @@ class Game:
     def draw (self):
         # Draws all the updates
         self.screen.fill(WHITE)
-        #background = pg.image.load(path.join(image_folder, "Background.png")).convert()
-        #self.screen.blit(background, (0,0))
+        background = pg.image.load(path.join(image_folder, "Background_sm.gif")).convert()
+
+        self.screen.blit(pg.transform.scale(background, (1600,900)), (0,0))
         ### Background currently causes a ton of lag, look into other methods.
         self.all_sprites.draw(self.screen)
         # for sprite in self.all_sprites:

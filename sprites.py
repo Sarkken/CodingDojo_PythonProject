@@ -11,7 +11,7 @@ image_folder = path.join(path.dirname(__file__), 'images')
 class Player (pg.sprite.Sprite): 
     # Player Character Sprite
     
-    def __init__(self, game):
+    def __init__(self, game, spawn_x=40, spawn_y=500):
         pg.sprite.Sprite.__init__(self)
         self.game = game
         self.walking = False
@@ -23,7 +23,7 @@ class Player (pg.sprite.Sprite):
         self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         #self.rect.midbottom = vector(WIDTH/2, HEIGHT) # Starting position
-        self.position = vector(40, 500)
+        self.position = vector(spawn_x, spawn_y)
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
         self.is_grounded = False
@@ -106,6 +106,7 @@ class Player (pg.sprite.Sprite):
 
 #  class Enemy (pg.sprite.Sprite):
 #      pass
+
     def animate(self):
         now = pg.time.get_ticks()
         if self.velocity.x != 0:
@@ -137,34 +138,35 @@ class Player (pg.sprite.Sprite):
 
 
 class Mob(pg.sprite.Sprite):
-    def __init__(self, x, y, w, h, end):
+    def __init__(self, spawn_x, spawn_y, distance):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((30,40))
-        self.image.fill(GRAY)
+        self.image = pg.image.load(path.join(image_folder, "Enemy.png")).convert()
+        self.image.set_colorkey(MASK)
+        # self.image.fill(GRAY)
         self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        self.end = end
-        self.path = [x, self.end]
+        self.position = vector(spawn_x, spawn_y)
+        self.distance = distance
+        self.path = [spawn_x, (spawn_x+self.distance)]
         self.walkCount = 0
         self.move_tracker = 0    
         self.vel = 1
         
     def update(self):
         if self.vel > 0:
-            if self.rect.x < self.path[1] + self.vel:
-                self.rect.x += self.vel
+            if self.position.x < self.path[1] + self.vel:
+                self.position.x += self.vel
             else:
                 self.vel = self.vel * -1
-                self.rect.x += self.vel
+                self.position.x += self.vel
                 self.walkCount = 0
         else:
-            if self.rect.x > self.path[0] - self.vel:
-                self.rect.x += self.vel
+            if self.position.x > self.path[0] - self.vel:
+                self.position.x += self.vel
             else:
                 self.vel = self.vel * -1
-                self.rect.x += self.vel
+                self.position.x += self.vel
                 self.walkCount = 0
+        self.rect.midbottom = self.position
 
 
 class Platform(pg.sprite.Sprite): 
