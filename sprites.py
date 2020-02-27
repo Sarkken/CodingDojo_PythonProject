@@ -18,7 +18,7 @@ class Player (pg.sprite.Sprite):
         self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         #self.rect.midbottom = vector(WIDTH/2, HEIGHT) # Starting position
-        self.position = vector(WIDTH/2, HEIGHT-30)
+        self.position = vector(40, 500)
         self.velocity = vector(0,0)
         self.acceleration = vector(0,0)
         self.is_grounded = False
@@ -123,7 +123,7 @@ class Platform(pg.sprite.Sprite):
     def __init__ (self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
-        self.image.fill(GREEN)
+        self.image.fill(GRAY)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -147,7 +147,7 @@ class MovingPlatformVertical(pg.sprite.Sprite):
     # determines how far the platform moves. If no values are given for these, then the default
     # values in the settings.py file are used.
     
-    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE): #initial direction needed?
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE, i=1): 
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -158,15 +158,24 @@ class MovingPlatformVertical(pg.sprite.Sprite):
         self.move_tracker = 0
         self.velocity = v
         self.distance = d
+        self.initial_direction = i
 
     def update (self):
-        #testing moving platforms
-        if self.move_tracker < 0:
-            self.top_surface.y += self.velocity
-        elif 0 < self.move_tracker < self.distance:
-            self.top_surface.y -= self.velocity
-        elif self.move_tracker >= self.distance:
-            self.move_tracker = self.distance * -1
+        # Moves platforms based on previously defined values
+        if self.initial_direction > 0:
+            if self.move_tracker < 0:
+                self.top_surface.y += self.velocity
+            elif 0 < self.move_tracker < self.distance:
+                self.top_surface.y -= self.velocity
+            elif self.move_tracker >= self.distance:
+                self.move_tracker = self.distance * -1
+        if self.initial_direction < 0:
+            if self.move_tracker < 0:
+                self.top_surface.y -= self.velocity
+            elif 0 < self.move_tracker < self.distance:
+                self.top_surface.y += self.velocity
+            elif self.move_tracker >= self.distance:
+                self.move_tracker = self.distance * -1
         self.move_tracker += 1
         self.rect.midtop = self.top_surface
 
@@ -177,7 +186,7 @@ class MovingPlatformHorizontal(pg.sprite.Sprite):
     # which determines how far the platform moves. If no values are given for these, then the 
     # default values in the settings.py file are used.
     
-    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE): # initial direction needed?
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE, i=1):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -188,15 +197,27 @@ class MovingPlatformHorizontal(pg.sprite.Sprite):
         self.move_tracker = 0
         self.velocity = v
         self.distance = d
+        self.initial_direction = i
+        self.drag = 0
 
     def update (self):
-        #testing moving platforms
-        if self.move_tracker < 0:
-            self.velocity = 1
-        elif 0 < self.move_tracker < self.distance:
-            self.velocity = -1
-        elif self.move_tracker >= self.distance:
-            self.move_tracker = self.distance * -1
-        self.top_surface.x += self.velocity
+        if self.initial_direction > 0:
+            if self.move_tracker < 0:
+                self.top_surface.x += self.velocity
+                self.drag = self.velocity
+            elif 0 < self.move_tracker < self.distance:
+                self.top_surface.x -= self.velocity
+                self.drag = self.velocity * -1
+            elif self.move_tracker >= self.distance:
+                self.move_tracker = self.distance * -1
+        if self.initial_direction < 0:
+            if self.move_tracker < 0:
+                self.top_surface.x -= self.velocity
+                self.drag = self.velocity * -1
+            elif 0 < self.move_tracker < self.distance:
+                self.top_surface.x += self.velocity
+                self.drag = self.velocity
+            elif self.move_tracker >= self.distance:
+                self.move_tracker = self.distance * -1
         self.move_tracker += 1
         self.rect.midtop = self.top_surface
