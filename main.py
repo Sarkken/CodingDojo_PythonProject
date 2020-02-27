@@ -5,7 +5,7 @@ from os import path
 
 # Asset Folder Paths
 image_folder = path.join(path.dirname(__file__), 'images')
-
+audio_folder = path.join(path.dirname(__file__), 'sounds')
 
 
 class Game:
@@ -98,7 +98,7 @@ class Game:
             self.player.health -= MOB_DAMAGE
             
             if self.player.health == 0:
-                self.player = False
+                self.game_over()
 
             if hits:
                 self.player.position += vector(MOB_KNOCKBACK, 0)
@@ -170,7 +170,10 @@ class Game:
 
     def draw (self):
         # Draws all the updates
-        self.screen.fill(BLACK)
+        self.screen.fill(WHITE)
+        #background = pg.image.load(path.join(image_folder, "Background.png")).convert()
+        #self.screen.blit(background, (0,0))
+        ### Background currently causes a ton of lag, look into other methods.
         self.all_sprites.draw(self.screen)
         # for sprite in self.all_sprites:
         #     if isinstance(sprite, Player):
@@ -181,7 +184,7 @@ class Game:
     
 
     def game_intro(self):
-        pg.mixer.music.load("sounds\happy_adveture.mp3")
+        pg.mixer.music.load(path.join(audio_folder, "happy_adveture.mp3"))
         pg.mixer.music.play(loops=-1)
 
         intro = True
@@ -211,7 +214,7 @@ class Game:
                     self.new()
                     self.run()
             else:
-                pg.draw.rect(self.screen, LIGHT_GREEN,((WIDTH/2) - 500,575,400,100))
+                pg.draw.rect(self.screen, DIM_GREEN,((WIDTH/2) - 500,575,400,100))
 
 
             smallText = pg.font.Font("freesansbold.ttf",60)
@@ -225,7 +228,7 @@ class Game:
                 if click[0] == 1:
                    pg.quit()              
             else:
-                pg.draw.rect(self.screen, LIGHT_RED,((WIDTH/2) + 100,575,400,100))
+                pg.draw.rect(self.screen, DIM_RED,((WIDTH/2) + 100,575,400,100))
 
 
             smallText = pg.font.Font("freesansbold.ttf",60)
@@ -324,7 +327,7 @@ class Game:
                         self.new()
                         self.run()
                 else:
-                    pg.draw.rect(self.screen, LIGHT_GREEN,((WIDTH/2) - 500,575,400,100))
+                    pg.draw.rect(self.screen, DIM_GREEN,((WIDTH/2) - 500,575,400,100))
 
 
                 smallText = pg.font.Font("freesansbold.ttf",60)
@@ -338,7 +341,7 @@ class Game:
                     if click[0] == 1:
                         pg.quit()              
                 else:
-                    pg.draw.rect(self.screen, LIGHT_RED,((WIDTH/2) + 100,575,400,100))
+                    pg.draw.rect(self.screen, DIM_RED,((WIDTH/2) + 100,575,400,100))
 
 
                 smallText = pg.font.Font("freesansbold.ttf",60)
@@ -352,7 +355,7 @@ class Game:
             self.clock.tick(FPS)
 
     def game_over(self):
-        pg.mixer.music.load("test1\Death.mp3")
+        pg.mixer.music.load(path.join(audio_folder, "Death.mp3"))
         pg.mixer.music.play(loops=-1)
         intro = True
         while intro:
@@ -383,10 +386,12 @@ class Game:
             if (WIDTH/2) - 500+400 > mouse[0] > (WIDTH/2) - 500 and 575+100 > mouse[1] > 575:
                 pg.draw.rect(self.screen, GREEN,((WIDTH/2) - 500,575,400,100))
                 if click[0] == 1:
+                    pg.mixer.music.load(path.join(audio_folder, "happy_adveture.mp3"))
+                    pg.mixer.music.play(loops=-1)
                     self.new()
                     self.run()
             else:
-                pg.draw.rect(self.screen, LIGHT_GREEN,((WIDTH/2) - 500,575,400,100))
+                pg.draw.rect(self.screen, DIM_GREEN,((WIDTH/2) - 500,575,400,100))
 
 
             smallText = pg.font.Font("freesansbold.ttf",60)
@@ -400,7 +405,7 @@ class Game:
                 if click[0] == 1:
                     pg.quit()              
             else:
-                pg.draw.rect(self.screen, LIGHT_RED,((WIDTH/2) + 100,575,400,100))
+                pg.draw.rect(self.screen, DIM_RED,((WIDTH/2) + 100,575,400,100))
 
 
             smallText = pg.font.Font("freesansbold.ttf",60)
