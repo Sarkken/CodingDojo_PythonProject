@@ -1,17 +1,21 @@
 #Sprite classes for the game.
 import pygame as pg
 from settings import *
+from os import path
 vector = pg.math.Vector2
 
+
+# Asset Folder Paths
+image_folder = path.join(path.dirname(__file__), 'images')
 
 class Player (pg.sprite.Sprite): 
     # Player Character Sprite
     
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((PLAYER_WIDTH,PLAYER_HEIGHT))
-        self.image.fill(RED)
         self.game = game
+        self.image = pg.image.load(path.join(image_folder, "player_mask.png")).convert()
+        self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         #self.rect.midbottom = vector(WIDTH/2, HEIGHT) # Starting position
         self.position = vector(WIDTH/2, HEIGHT-30)
@@ -20,6 +24,7 @@ class Player (pg.sprite.Sprite):
         self.is_grounded = False
         self.is_airborn = False
         self.has_doublejump = False
+        self.mask = pg.mask.from_surface(self.image)
         
         # self.vx = 0
         # self.vy = 0
@@ -30,11 +35,13 @@ class Player (pg.sprite.Sprite):
                 self.velocity.y = -15
                 self.is_grounded = False
                 self.is_airborn = True
+                self.game.jump_sound.play()
         # If player isn't grounded, check if they have a double-jump available.
         elif self.is_airborn:
             if self.has_doublejump:
                 self.velocity.y = -12
                 self.has_doublejump = False
+                self.game.jump_sound.play()
 
     def update(self):
         self.acceleration = vector(0,PLAYER_GRAVITY)
@@ -61,13 +68,10 @@ class Player (pg.sprite.Sprite):
             self.acceleration.x = 0
             self.velocity.x = 0
 
-    
-
-
 class Platform(pg.sprite.Sprite): 
-    # Main class for all platforms. Will likely work best for the bar graph sprites, may need a 
-    # subclass or separate class for "ground" that players can walk up, i.e. the line graph in the 
-    # example image. 
+    # Main class for all static platforms. Currently only the ground platform uses this class, but 
+    # the line-graph (the pointy ground) may also use this platform type if we can implement it. If 
+    # we do we'll likely need to look at mask collision so the player can walk up the hills.
     
     def __init__ (self, x, y, w, h):
         pg.sprite.Sprite.__init__(self)
@@ -76,14 +80,27 @@ class Platform(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.move_tracker = 0
+
+class GraphPlatform(pg.sprite.Sprite):
+    # Class for the Line Graph platforms, which will almost always be some kind of angle. Testing
+    # for collision stuff.
+
+    def __init__(self, x, y, w, h):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.image.load(path.join(image_folder, "mask_test.png")).convert()
+        self.image.set_colorkey(MASK)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.mask = pg.mask.from_surface(self.image)
 
 class MovingPlatformVertical(pg.sprite.Sprite): 
-    # Main class for all platforms. Will likely work best for the bar graph sprites, may need a 
-    # subclass or separate class for "ground" that players can walk up, i.e. the line graph in the 
-    # example image. 
+    # Main class for all platforms that move vertically (up and down). The Bar graph elements will
+    # use this class. Sprites can have a custom velocity at which they move, and length path which
+    # determines how far the platform moves. If no values are given for these, then the default
+    # values in the settings.py file are used.
     
-    def __init__ (self, x, y, w, h):
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE): #initial direction needed?
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -92,25 +109,28 @@ class MovingPlatformVertical(pg.sprite.Sprite):
         self.rect.y = y
         self.top_surface = vector(x, y)
         self.move_tracker = 0
-        self.velocity = 1
+        self.velocity = v
+        self.distance = d
 
     def update (self):
         #testing moving platforms
         if self.move_tracker < 0:
             self.top_surface.y += self.velocity
-        elif 0 < self.move_tracker < 60:
+        elif 0 < self.move_tracker < self.distance:
             self.top_surface.y -= self.velocity
-        elif self.move_tracker >= 60:
-            self.move_tracker = -60
+        elif self.move_tracker >= self.distance:
+            self.move_tracker = self.distance * -1
         self.move_tracker += 1
         self.rect.midtop = self.top_surface
 
+
 class MovingPlatformHorizontal(pg.sprite.Sprite): 
-    # Main class for all platforms. Will likely work best for the bar graph sprites, may need a 
-    # subclass or separate class for "ground" that players can walk up, i.e. the line graph in the 
-    # example image. 
+    # Main class for all platforms that move horizontally (side to side). The graph "cell" elements 
+    # will use this class. Sprites can have a custom velocity at which they move, and length path
+    # which determines how far the platform moves. If no values are given for these, then the 
+    # default values in the settings.py file are used.
     
-    def __init__ (self, x, y, w, h):
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE): # initial direction needed?
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -119,16 +139,17 @@ class MovingPlatformHorizontal(pg.sprite.Sprite):
         self.rect.y = y
         self.top_surface = vector(x, y)
         self.move_tracker = 0
-        self.velocity = 1
+        self.velocity = v
+        self.distance = d
 
     def update (self):
         #testing moving platforms
         if self.move_tracker < 0:
             self.velocity = 1
-        elif 0 < self.move_tracker < 60:
+        elif 0 < self.move_tracker < self.distance:
             self.velocity = -1
-        elif self.move_tracker >= 60:
-            self.move_tracker = -60
+        elif self.move_tracker >= self.distance:
+            self.move_tracker = self.distance * -1
         self.top_surface.x += self.velocity
         self.move_tracker += 1
         self.rect.midtop = self.top_surface

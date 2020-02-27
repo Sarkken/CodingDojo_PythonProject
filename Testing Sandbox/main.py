@@ -1,7 +1,6 @@
 import pygame as pg
 from settings import *
 from sprites import *
-import time
 
 
 
@@ -10,13 +9,16 @@ class Game:
         pg.init()
         pg.mixer.init() # For audio
         pg.display.set_caption(TITLE)
-        
+        self.deltaY = 0
+        self.true_scroll = [0,0]
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.clock = pg.time.Clock()
         self.running = True
-        
+        self.jump_sound = pg.mixer.Sound('test1\Jump10.wav')
+
     def new (self):
         # Starts a new game
+        bg = pg.image.load("test1\sheet1.png").convert()
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
         self.moving_platforms_vertical = pg.sprite.Group()
@@ -24,35 +26,38 @@ class Game:
         self.ground = pg.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
-        ground_plat = Platform(0, HEIGHT-20, WIDTH, 20)
-        self.all_sprites.add(ground_plat)
-        self.ground.add(ground_plat)
-        wall_plat1 = Platform(-20, HEIGHT-250, 60, 250)
-        self.all_sprites.add(wall_plat1)
-        self.platforms.add(wall_plat1)
-        wall_plat2 = Platform(WIDTH-40, HEIGHT-250, 60, 250)
-        self.all_sprites.add(wall_plat2)
-        self.platforms.add(wall_plat2)
-        plat1 = Platform(int(WIDTH*.25), HEIGHT-60, 80, 20)
-        self.all_sprites.add(plat1)
-        self.platforms.add(plat1)
-        plat2 = MovingPlatformVertical(int(WIDTH*.5), HEIGHT-120, 80, 20)
-        self.all_sprites.add(plat2)
-        self.platforms.add(plat2)
-        self.moving_platforms_vertical.add(plat2)
-        plat3 = MovingPlatformHorizontal(int(WIDTH*.75), HEIGHT-120, 80, 20)
-        self.all_sprites.add(plat3)
-        self.platforms.add(plat3)
-        self.moving_platforms_horizontal.add(plat3)
+        for plat in PLATFORM_LIST:
+            p = Platform(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
+
+        for plat in VERTICAL_FLATFORM_LIST:
+            p = MovingPlatformVertical(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
+            self.moving_platforms_vertical.add(p)
+
+        for plat in HORIZONTAL_FLATFORM_LIST:
+            p = MovingPlatformHorizontal(*plat)
+            self.all_sprites.add(p)
+            self.platforms.add(p)
+            self.moving_platforms_horizontal.add(p)
+
+        
+        pg.mixer.music.load("test1\happytune.wav")
+        self.run()
 
     def run (self):
         # Runs the game
+        pg.mixer.music.play(loops=-1)
+
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer.music.fadeout(500)
 
     def events (self):
         # Gets all the events
@@ -68,7 +73,7 @@ class Game:
     def update (self):
         # Process all the updates
         self.all_sprites.update()
-        
+
 
         # Gather collision data
         platform_collisions = pg.sprite.spritecollide(self.player, self.platforms, False)
@@ -123,25 +128,16 @@ class Game:
                     self.player.position.x = platform_collisions[0].rect.left - 20 
                     self.player.acceleration.x = 0
 
-
-        ### Chrisna win-condition code
-        if self.player.position.x >= 760 and self.player.position.y >= 150:
-            self.WinScreen(BLUE)
-            pg.display.update()
-            time.sleep(2)
-            self.game_end()
-
     def draw (self):
         # Draws all the updates
-        self.screen.fill(BLACK)
+        self.screen.fill(WHITE)
         self.all_sprites.draw(self.screen)
         pg.display.flip()
-        # Draws all the updates
-        self.screen.fill(BLACK)
-        self.all_sprites.draw(self.screen)
-        pg.display.flip()
-        
+
     def game_intro(self):
+        pg.mixer.music.load("test1\happy_adveture.mp3")
+        pg.mixer.music.play(loops=-1)
+
         intro = True
 
         while intro:
@@ -152,7 +148,7 @@ class Game:
                     quit()
                     
             self.screen.fill(BLACK)
-            largeText = pg.font.Font('freesansbold.ttf',115)
+            largeText = pg.font.Font('freesansbold.ttf',130)
             TextSurf = largeText.render("Office Escape!", True, WHITE)
             TextRect = TextSurf.get_rect()
             TextRect.center = ((WIDTH/2),(HEIGHT/2))
@@ -163,38 +159,42 @@ class Game:
 
             # print(mouse)
 
-            if 150+200 > mouse[0] > 150 and 275+50 > mouse[1] > 275:
-                pg.draw.rect(self.screen, BRIGHT_GREEN,(150,275,200,50))
+            if (WIDTH/2) - 500+400 > mouse[0] > (WIDTH/2) - 500 and 575+100 > mouse[1] > 575:
+                pg.draw.rect(self.screen, GREEN,((WIDTH/2) - 500,575,400,100))
                 if click[0] == 1:
                     self.new()
                     self.run()
             else:
-                pg.draw.rect(self.screen, GREEN,(150,275,200,50))
+                pg.draw.rect(self.screen, LIGHT_GREEN,((WIDTH/2) - 500,575,400,100))
 
 
-            smallText = pg.font.Font("freesansbold.ttf",30)
+            smallText = pg.font.Font("freesansbold.ttf",60)
             TextSurf = smallText.render("START!", True, WHITE)
             TextRect = TextSurf.get_rect()
-            TextRect.center = ( (150+(200/2)), (275+(50/2)) )
+            TextRect.center = ( ((WIDTH/2) - 500+(400/2)), (575+(100/2)) )
             self.screen.blit(TextSurf, TextRect)
             
-            if 460+200 > mouse[0] > 460 and 275+50 > mouse[1] > 275:
-                pg.draw.rect(self.screen, BRIGHT_RED,(460,275,200,50))
+            if (WIDTH/2) + 100+400 > mouse[0] > (WIDTH/2) + 100 and 575+100 > mouse[1] > 575:
+                pg.draw.rect(self.screen, RED,((WIDTH/2) + 100,575,400,100))
                 if click[0] == 1:
                    pg.quit()              
             else:
-                pg.draw.rect(self.screen, RED,(460,275,200,50))
+                pg.draw.rect(self.screen, LIGHT_RED,((WIDTH/2) + 100,575,400,100))
 
 
-            smallText = pg.font.Font("freesansbold.ttf",30)
+            smallText = pg.font.Font("freesansbold.ttf",60)
             TextSurf = smallText.render("EXIT!", True, WHITE)
             TextRect = TextSurf.get_rect()
-            TextRect.center = ( (460+(200/2)), (275+(50/2)) )
+            TextRect.center = ( ((WIDTH/2) + 100+(400/2)), (575+(100/2)) )
             self.screen.blit(TextSurf, TextRect)
             pg.display.update()
             self.clock.tick(FPS)
 
+        pg.mixer.music.fadeout(500)
+
     def game_end(self):
+
+
         intro = True
 
         while intro:
@@ -205,7 +205,7 @@ class Game:
                     quit()
                     
             self.screen.fill(WHITE)
-            largeText = pg.font.Font('freesansbold.ttf',70)
+            largeText = pg.font.Font('freesansbold.ttf',100)
             TextSurf = largeText.render("Thanks for Playing!", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
@@ -213,7 +213,7 @@ class Game:
             self.screen.blit(TextSurf, TextRect)
 
 
-            largeText = pg.font.Font('freesansbold.ttf',50)
+            largeText = pg.font.Font('freesansbold.ttf',80)
             TextSurf = largeText.render("Game created by:", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
@@ -221,7 +221,7 @@ class Game:
             self.screen.blit(TextSurf, TextRect)
 
 
-            largeText = pg.font.Font('freesansbold.ttf',30)
+            largeText = pg.font.Font('freesansbold.ttf',50)
             TextSurf = largeText.render("Gary Sabo", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
@@ -229,7 +229,7 @@ class Game:
             self.screen.blit(TextSurf, TextRect)
 
 
-            largeText = pg.font.Font('freesansbold.ttf',30)
+            largeText = pg.font.Font('freesansbold.ttf',50)
             TextSurf = largeText.render("Jimmy Pham", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
@@ -237,7 +237,7 @@ class Game:
             self.screen.blit(TextSurf, TextRect)
 
 
-            largeText = pg.font.Font('freesansbold.ttf',30)
+            largeText = pg.font.Font('freesansbold.ttf',50)
             TextSurf = largeText.render("Randy Phan", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
@@ -245,7 +245,7 @@ class Game:
             self.screen.blit(TextSurf, TextRect)
 
 
-            largeText = pg.font.Font('freesansbold.ttf',30)
+            largeText = pg.font.Font('freesansbold.ttf',50)
             TextSurf = largeText.render("Chrisna Ly", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
@@ -253,14 +253,14 @@ class Game:
             self.screen.blit(TextSurf, TextRect)
 
 
-            largeText = pg.font.Font('freesansbold.ttf',30)
+            largeText = pg.font.Font('freesansbold.ttf',50)
             TextSurf = largeText.render("Daniel Lee", True, BLACK)
             TextRect = TextSurf.get_rect()
             self.deltaY -= 0.5
             TextRect.center = ((WIDTH/2),((HEIGHT/2)+750) + self.deltaY)
             self.screen.blit(TextSurf, TextRect)
 
-            if self.deltaY < -1100:
+            if self.deltaY < -1300:
                 self.screen.fill(BLACK)
 
                 largeText = pg.font.Font('freesansbold.ttf',115)
@@ -272,57 +272,107 @@ class Game:
                 mouse = pg.mouse.get_pos()
                 click = pg.mouse.get_pressed()
 
-                # print(mouse)
-
-                if 150+200 > mouse[0] > 150 and 275+50 > mouse[1] > 275:
-                    pg.draw.rect(self.screen, BRIGHT_GREEN,(150,275,200,50))
+                if (WIDTH/2) - 500+400 > mouse[0] > (WIDTH/2) - 500 and 575+100 > mouse[1] > 575:
+                    pg.draw.rect(self.screen, GREEN,((WIDTH/2) - 500,575,400,100))
                     if click[0] == 1:
                         self.new()
                         self.run()
                 else:
-                    pg.draw.rect(self.screen, GREEN,(150,275,200,50))
+                    pg.draw.rect(self.screen, LIGHT_GREEN,((WIDTH/2) - 500,575,400,100))
 
 
-                smallText = pg.font.Font("freesansbold.ttf",30)
+                smallText = pg.font.Font("freesansbold.ttf",60)
                 TextSurf = smallText.render("START!", True, WHITE)
                 TextRect = TextSurf.get_rect()
-                TextRect.center = ( (150+(200/2)), (275+(50/2)) )
+                TextRect.center = ( ((WIDTH/2) - 500+(400/2)), (575+(100/2)) )
                 self.screen.blit(TextSurf, TextRect)
                 
-                if 460+200 > mouse[0] > 460 and 275+50 > mouse[1] > 275:
-                    pg.draw.rect(self.screen, BRIGHT_RED,(460,275,200,50))
+                if (WIDTH/2) + 100+400 > mouse[0] > (WIDTH/2) + 100 and 575+100 > mouse[1] > 575:
+                    pg.draw.rect(self.screen, RED,((WIDTH/2) + 100,575,400,100))
                     if click[0] == 1:
-                        pg.quit()       
+                        pg.quit()              
                 else:
-                    pg.draw.rect(self.screen, RED,(460,275,200,50))
+                    pg.draw.rect(self.screen, LIGHT_RED,((WIDTH/2) + 100,575,400,100))
 
 
-                smallText = pg.font.Font("freesansbold.ttf",30)
+                smallText = pg.font.Font("freesansbold.ttf",60)
                 TextSurf = smallText.render("EXIT!", True, WHITE)
                 TextRect = TextSurf.get_rect()
-                TextRect.center = ( (460+(200/2)), (275+(50/2)) )
+                TextRect.center = ( ((WIDTH/2) + 100+(400/2)), (575+(100/2)) )
                 self.screen.blit(TextSurf, TextRect)
-
 
 
             pg.display.update()
             self.clock.tick(FPS)
 
-                # Endgame screen
-    def WinScreen(self, color):
-        smallText = pg.font.Font("freesansbold.ttf",30)
-        TextSurf = smallText.render("WINNER WINNER", True, WHITE)
-        TextRect = TextSurf.get_rect()
-        TextRect.center = ((WIDTH/2),(HEIGHT/2))
-        self.screen.blit(TextSurf, TextRect)
+    def game_over(self):
+        pg.mixer.music.load("test1\Death.mp3")
+        pg.mixer.music.play(loops=-1)
+        intro = True
+        while intro:
+            for event in pg.event.get():
+                # print(event)
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    quit()
+                    
+            self.screen.fill(DEATH_RED)
+            largeText = pg.font.Font('freesansbold.ttf',130)
+            TextSurf = largeText.render("You Died!", True, BLACK)
+            TextRect = TextSurf.get_rect()
+            TextRect.center = ((WIDTH/2),(HEIGHT/2)- 200)
+            self.screen.blit(TextSurf, TextRect)
 
-        
+            largeText = pg.font.Font('freesansbold.ttf',130)
+            TextSurf = largeText.render("Try Again?", True, WHITE)
+            TextRect = TextSurf.get_rect()
+            TextRect.center = ((WIDTH/2),(HEIGHT/2))
+            self.screen.blit(TextSurf, TextRect)
+
+            mouse = pg.mouse.get_pos()
+            click = pg.mouse.get_pressed()
+
+            # print(mouse)
+
+            if (WIDTH/2) - 500+400 > mouse[0] > (WIDTH/2) - 500 and 575+100 > mouse[1] > 575:
+                pg.draw.rect(self.screen, GREEN,((WIDTH/2) - 500,575,400,100))
+                if click[0] == 1:
+                    self.new()
+                    self.run()
+            else:
+                pg.draw.rect(self.screen, LIGHT_GREEN,((WIDTH/2) - 500,575,400,100))
+
+
+            smallText = pg.font.Font("freesansbold.ttf",60)
+            TextSurf = smallText.render("YES", True, WHITE)
+            TextRect = TextSurf.get_rect()
+            TextRect.center = ( ((WIDTH/2) - 500+(400/2)), (575+(100/2)) )
+            self.screen.blit(TextSurf, TextRect)
+            
+            if (WIDTH/2) + 100+400 > mouse[0] > (WIDTH/2) + 100 and 575+100 > mouse[1] > 575:
+                pg.draw.rect(self.screen, RED,((WIDTH/2) + 100,575,400,100))
+                if click[0] == 1:
+                    pg.quit()              
+            else:
+                pg.draw.rect(self.screen, LIGHT_RED,((WIDTH/2) + 100,575,400,100))
+
+
+            smallText = pg.font.Font("freesansbold.ttf",60)
+            TextSurf = smallText.render("NO", True, WHITE)
+            TextRect = TextSurf.get_rect()
+            TextRect.center = ( ((WIDTH/2) + 100+(400/2)), (575+(100/2)) )
+            self.screen.blit(TextSurf, TextRect)
+            pg.display.update()
+            self.clock.tick(FPS)
+
+        pg.mixer.music.fadeout(500)
+
 
 game = Game()
-game.game_intro()
+# game.game_intro()
 while game.running:
     game.new()
-    game.run()
-    game.game_end()
+    # game.game_end()
+    # game.game_over()
 
 pg.quit()
