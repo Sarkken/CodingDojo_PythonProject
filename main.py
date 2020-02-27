@@ -13,10 +13,11 @@ class Game:
         pg.init()
         pg.mixer.init() # For audio
         pg.display.set_caption(TITLE)
-        
+        self.deltaY = 0
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.clock = pg.time.Clock()
         self.running = True
+        self.jump_sound = pg.mixer.Sound('sounds\Jump10.wav')
         
 
     def new (self):
@@ -57,16 +58,19 @@ class Game:
         mob1 = Mob(int(WIDTH*.4), HEIGHT-60, 80, 20, 600)
         self.all_sprites.add(mob1)
         self.mobs.add(mob1)
+        pg.mixer.music.load("sounds\happytune.wav")
       
 
     def run (self):
         # Runs the game
+        pg.mixer.music.play(loops=-1)
         self.playing = True
         while self.playing:
             self.clock.tick(FPS)
             self.events()
             self.update()
             self.draw()
+        pg.mixer.music.fadeout(500)
 
 
     def events (self):
@@ -242,7 +246,8 @@ class Game:
         pg.mixer.music.fadeout(500)
 
     def game_end(self):
-
+        pg.mixer.music.load("sounds\enchanted.mp3")
+        pg.mixer.music.play(loops=-1)
 
         intro = True
 
@@ -353,9 +358,10 @@ class Game:
 
             pg.display.update()
             self.clock.tick(FPS)
+        pg.mixer.music.fadeout(500)
 
     def game_over(self):
-        pg.mixer.music.load(path.join(audio_folder, "Death.mp3"))
+        pg.mixer.music.load("sounds\Death.mp3")
         pg.mixer.music.play(loops=-1)
         intro = True
         while intro:
