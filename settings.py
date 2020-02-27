@@ -1,7 +1,7 @@
 # Game Settings and Attributes
 TITLE = "Office Escape"
-WIDTH = 1000
-HEIGHT = 600
+WIDTH = 1600
+HEIGHT = 900
 FPS = 60
 
 # Player Properties Relating to Movement

@@ -102,7 +102,7 @@ class MovingPlatformVertical(pg.sprite.Sprite):
     # determines how far the platform moves. If no values are given for these, then the default
     # values in the settings.py file are used.
     
-    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE):
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE): #initial direction needed?
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
@@ -132,7 +132,7 @@ class MovingPlatformHorizontal(pg.sprite.Sprite):
     # which determines how far the platform moves. If no values are given for these, then the 
     # default values in the settings.py file are used.
     
-    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE):
+    def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE): # initial direction needed?
         pg.sprite.Sprite.__init__(self)
         self.image = pg.Surface((w,h))
         self.image.fill(GREEN)
