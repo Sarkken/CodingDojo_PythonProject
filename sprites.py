@@ -14,7 +14,7 @@ class Player (pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
         self.game = game
-        self.image = pg.image.load(path.join(image_folder, "player_mask.png")).convert()
+        self.image = pg.image.load(path.join(image_folder, "Ninja_Stand.png")).convert()
         self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         #self.rect.midbottom = vector(WIDTH/2, HEIGHT) # Starting position
@@ -25,7 +25,7 @@ class Player (pg.sprite.Sprite):
         self.is_airborn = False
         self.has_doublejump = False
         self.mask = pg.mask.from_surface(self.image)
-        
+        self.health = PLAYER_HEALTH #Dan
         # self.vx = 0
         # self.vy = 0
         
@@ -61,14 +61,57 @@ class Player (pg.sprite.Sprite):
         self.position += calc_move
         self.rect.midbottom = self.position
 
-        # Block from going outside bounds.
-        if self.position.x > WIDTH or self.position.x < 0:
-            self.acceleration.x = 0
-            self.velocity.x = 0
+        # # Block from going outside bounds.
+        # if self.position.x > WIDTH or self.position.x < 0:
+        #     self.acceleration.x = 0
+        #     self.velocity.x = 0
+        ### Removed in favor of using collisions with out of map bounding boxes.
 
+    # def draw_health(self):
+        #     if self.health >= 75:
+        #         col = GREEN
+        #     elif self.health >= 50:
+        #         col = YELLOW
+        #     else:
+        #         col = RED
+        #     width = int(self.rect.width * self.health/100)
+        #     self.health_bar = pg.Rect(0, 0, width, 7)
+        #     pg.draw.rect(self.image, col, self.health_bar)
 
 #  class Enemy (pg.sprite.Sprite):
 #      pass
+
+
+class Mob(pg.sprite.Sprite):
+    def __init__(self, x, y, w, h, end):
+        pg.sprite.Sprite.__init__(self)
+        self.image = pg.Surface((30,40))
+        self.image.fill(GRAY)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.end = end
+        self.path = [x, self.end]
+        self.walkCount = 0
+        self.move_tracker = 0    
+        self.vel = 1
+        
+    def update(self):
+        if self.vel > 0:
+            if self.rect.x < self.path[1] + self.vel:
+                self.rect.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.rect.x += self.vel
+                self.walkCount = 0
+        else:
+            if self.rect.x > self.path[0] - self.vel:
+                self.rect.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.rect.x += self.vel
+                self.walkCount = 0
+
 
 class Platform(pg.sprite.Sprite): 
     # Main class for all static platforms. Currently only the ground platform uses this class, but 

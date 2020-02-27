@@ -23,6 +23,7 @@ class Game:
         # Starts a new game
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
         self.moving_platforms_vertical = pg.sprite.Group()
         self.moving_platforms_horizontal = pg.sprite.Group()
         self.graph_platforms = pg.sprite.Group()
@@ -53,6 +54,9 @@ class Game:
         self.all_sprites.add(graph_plat)
         # self.platforms.add(graph_plat)
         self.graph_platforms.add(graph_plat)
+        mob1 = Mob(int(WIDTH*.4), HEIGHT-60, 80, 20, 600)
+        self.all_sprites.add(mob1)
+        self.mobs.add(mob1)
       
 
     def run (self):
@@ -86,14 +90,23 @@ class Game:
         ground_collisions = pg.sprite.spritecollide(self.player, self.ground, False)
         ramp_collision = pg.sprite.spritecollide(self.player, self.graph_platforms, False, pg.sprite.collide_mask)
 
+
+        #mobs hit player
+        hits = pg.sprite.spritecollide(self.player, self.mobs, False)
+        
+        for hit in hits:
+            self.player.health -= MOB_DAMAGE
+            
+            if self.player.health == 0:
+                self.player = False
+
+            if hits:
+                self.player.position += vector(MOB_KNOCKBACK, 0)
+
         # Checks collisions on player falling
         if self.player.velocity.y > 0:
-            # Check to see if the player cleared the platform
-            # if platform_collisions[0] in self.graph_platforms:
-            # Can you stand on a ramp?
-            # ramp_collision = pg.sprite.spritecollide(self.player, self.graph_platforms, False, pg.sprite.collide_mask)
+            # Check to see if the player collided with a ramp
             if ramp_collision:
-                # self.player.position.y = ramp_collision[0].
                 self.player.velocity.y = 0
                 relative_x = self.player.rect.x - ramp_collision[0].rect.x
                 self.player.position.y = HEIGHT - (relative_x + 15)
@@ -159,10 +172,33 @@ class Game:
 
     def draw (self):
         # Draws all the updates
-        self.screen.fill(GRAY)
+        self.screen.fill(BLACK)
         self.all_sprites.draw(self.screen)
+        # for sprite in self.all_sprites:
+        #     if isinstance(sprite, Player):
+        #         sprite.draw_health()
+        #HUD
+        draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
         pg.display.flip()
         
+        
+def draw_player_health(surf, x, y, pct):
+    if pct < 0:
+        pct = 0
+    BAR_LENGTH = 100
+    BAR_HEIGHT = 20
+    fill = pct * BAR_LENGTH
+    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
+    if pct > .6:
+        col= GREEN
+    elif pct > .3:
+        col= YELLOW
+    else:
+        col= RED
+    pg.draw.rect(surf, col, fill_rect)
+    pg.draw.rect(surf, WHITE, outline_rect, 2)
+
 
 game = Game()
 

@@ -123,6 +123,8 @@ class Game:
                     self.player.position.x = platform_collisions[0].rect.left - 20 
                     self.player.acceleration.x = 0
 
+
+        ### Chrisna win-condition code
         if self.player.position.x >= 760 and self.player.position.y >= 150:
             self.WinScreen(BLUE)
             pg.display.update()
