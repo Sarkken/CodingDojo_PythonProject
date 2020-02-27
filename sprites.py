@@ -14,7 +14,12 @@ class Player (pg.sprite.Sprite):
     def __init__(self, game):
         pg.sprite.Sprite.__init__(self)
         self.game = game
-        self.image = pg.image.load(path.join(image_folder, "Ninja_Stand.png")).convert()
+        self.walking = False
+        self.jumping = False
+        self.current_frame = 0
+        self.last_update = 0
+        self.load_images()
+        self.image = self.stand_frame
         self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         #self.rect.midbottom = vector(WIDTH/2, HEIGHT) # Starting position
@@ -28,6 +33,22 @@ class Player (pg.sprite.Sprite):
         self.health = PLAYER_HEALTH #Dan
         # self.vx = 0
         # self.vy = 0
+
+    def load_images(self):
+        self.stand_frame = pg.image.load(path.join(image_folder, "Ninja_Stand.png")).convert()
+        self.stand_frame.set_colorkey(BLACK)
+
+
+        self.walk_frames_r = [pg.image.load(path.join(image_folder,"Ninja_Walk_1.png")).convert(),
+        pg.image.load(path.join(image_folder,"Ninja_Walk_2.png")).convert(),
+        pg.image.load(path.join(image_folder,"Ninja_Walk_3.png")).convert(),
+        pg.image.load(path.join(image_folder,"Ninja_Walk_2.png")).convert()]
+
+        self.walk_frames_l = []
+        for frame in self.walk_frames_r:
+            frame.set_colorkey(MASK)
+            self.walk_frames_l.append(pg.transform.flip(frame, True, False))
+
         
     def jump(self):
         # Check if player is currently grounded.
@@ -44,6 +65,7 @@ class Player (pg.sprite.Sprite):
                 self.game.jump_sound.play()
 
     def update(self):
+        self.animate()
         self.acceleration = vector(0,PLAYER_GRAVITY)
         keys = pg.key.get_pressed()
         calc_move = vector(0,0)
@@ -56,6 +78,9 @@ class Player (pg.sprite.Sprite):
         self.acceleration.x += self.velocity.x * PLAYER_FRICTION
         self.velocity += self.acceleration
         calc_move = self.velocity + 0.5 * self.acceleration
+        if abs(self.velocity.x) < 0.1:
+            self.velocity.x = 0
+        self.position += self.velocity + 0.5 * self.acceleration
         # Prevent moving too fast from gravity
         if (self.velocity.y + 0.5 * self.acceleration.y) > PLAYER_TERMINAL_VELOCITY:
             calc_move.y = PLAYER_TERMINAL_VELOCITY
@@ -82,6 +107,34 @@ class Player (pg.sprite.Sprite):
 
 #  class Enemy (pg.sprite.Sprite):
 #      pass
+    def animate(self):
+        now = pg.time.get_ticks()
+        if self.velocity.x != 0:
+            self.walking = True
+        else:
+            self.walking = False
+        # show walk animation
+        if self.walking:
+            if now - self.last_update > 200:
+                self.last_update = now
+                self.current_frame = (self.current_frame + 1) % 4
+                bottom = self.rect.bottom
+                if self.velocity.x > 0:
+                    self.image = self.walk_frames_r[self.current_frame]
+                else:
+                    self.image = self.walk_frames_l[self.current_frame]
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+
+        if not self.jumping and not self.walking:
+            if now - self.last_update > 200:
+                self.last_update = now
+                bottom = self.rect.bottom
+                self.image = self.stand_frame
+                self.rect = self.image.get_rect()
+                self.rect.bottom = bottom
+
+
 
 
 class Mob(pg.sprite.Sprite):
