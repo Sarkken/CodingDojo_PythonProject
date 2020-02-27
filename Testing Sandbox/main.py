@@ -2,7 +2,8 @@ import pygame as pg
 from settings import *
 from sprites import *
 
-
+# Asset Folder Paths
+image_folder = path.join(path.dirname(__file__), 'images')
 
 class Game:
     def __init__(self):
@@ -14,11 +15,11 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         self.clock = pg.time.Clock()
         self.running = True
-        self.jump_sound = pg.mixer.Sound('test1\Jump10.wav')
+        self.jump_sound = pg.mixer.Sound('sounds\Jump10.wav')
 
     def new (self):
         # Starts a new game
-        bg = pg.image.load("test1\sheet1.png").convert()
+        bg = pg.image.load(path.join(image_folder, "Background.png")).convert()
         self.all_sprites = pg.sprite.Group()
         self.platforms = pg.sprite.Group()
         self.moving_platforms_vertical = pg.sprite.Group()
@@ -44,7 +45,7 @@ class Game:
             self.moving_platforms_horizontal.add(p)
 
         
-        pg.mixer.music.load("test1\happytune.wav")
+        pg.mixer.music.load("sounds\happytune.wav")
         self.run()
 
     def run (self):
@@ -135,7 +136,7 @@ class Game:
         pg.display.flip()
 
     def game_intro(self):
-        pg.mixer.music.load("test1\happy_adveture.mp3")
+        pg.mixer.music.load("sounds\happy_adveture.mp3")
         pg.mixer.music.play(loops=-1)
 
         intro = True
@@ -369,10 +370,10 @@ class Game:
 
 
 game = Game()
-# game.game_intro()
+game.game_intro()
 while game.running:
     game.new()
-    # game.game_end()
-    # game.game_over()
+    game.game_end()
+    game.game_over()
 
 pg.quit()
