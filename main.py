@@ -51,9 +51,23 @@ class Game:
 
         # Platforms that player can jump and run on
         p1 = Platform(0, 500, 160, 500)
-        p2 = Platform(160, 600, 400, 500)
+        p2_1 = Platform(160, 840, 80, 500)
+        p2_2 = Platform(240, 760, 80, 500)
+        p2_3 = Platform(320, 760, 80, 500)
+        p2_4 = Platform(400, 760, 80, 500)
+        p2_5 = Platform(480, 680, 80, 500)
+        p2_1r = GraphPlatform(160, 840-80, 80, 80, "Up")
+        p2_2r = GraphPlatform(240, 760-80, 80, 80, "Up")
+        p2_3r = GraphPlatform(320, 760-80, 80, 80, "Down")
+        p2_4r = GraphPlatform(400, 760-80, 80, 80, "Up")
+        p2_5r = GraphPlatform(480, 680-80, 80, 80, "Up")
         p3 = Platform(560, 600, 320, 500)
-        p4 = Platform(880, 600, 240, 500)
+        p4_1 = Platform(880, 680, 80, 500)
+        p4_2 = Platform(960, 760, 80, 500)
+        p4_3 = Platform(1040, 760, 80, 500)
+        p4_1r = GraphPlatform(880, 680-80, 80, 80, "Down")
+        p4_2r = GraphPlatform(960, 760-80, 80, 80, "Down")
+        p4_3r = GraphPlatform(1040, 760-80, 80, 80, "Up")
         p5 = MovingPlatformVertical(1200, 600, 80, 600)
         p6 = MovingPlatformVertical(1360, 500, 80, 600, i=-1)
         p7 = MovingPlatformVertical(1520, 400, 80, 600)
@@ -61,9 +75,23 @@ class Game:
         p9 = MovingPlatformHorizontal(1520, 150, 160, 30, i=1)
         p10 = Platform(1550, 50, 50, 20)
         self.all_sprites.add(p1)
-        self.all_sprites.add(p2)
+        self.all_sprites.add(p2_1)
+        self.all_sprites.add(p2_2)
+        self.all_sprites.add(p2_3)
+        self.all_sprites.add(p2_4)
+        self.all_sprites.add(p2_5)
+        self.all_sprites.add(p2_1r)
+        self.all_sprites.add(p2_2r)
+        self.all_sprites.add(p2_3r)
+        self.all_sprites.add(p2_4r)
+        self.all_sprites.add(p2_5r)
         self.all_sprites.add(p3)
-        self.all_sprites.add(p4)
+        self.all_sprites.add(p4_1)
+        self.all_sprites.add(p4_2)
+        self.all_sprites.add(p4_3)
+        self.all_sprites.add(p4_1r)
+        self.all_sprites.add(p4_2r)
+        self.all_sprites.add(p4_3r)
         self.all_sprites.add(p5)
         self.all_sprites.add(p6)
         self.all_sprites.add(p7)
@@ -71,15 +99,29 @@ class Game:
         self.all_sprites.add(p9)
         self.all_sprites.add(p10)
         self.platforms.add(p1)
-        self.platforms.add(p2)
+        self.platforms.add(p2_1)
+        self.platforms.add(p2_2)
+        self.platforms.add(p2_3)
+        self.platforms.add(p2_4)
+        self.platforms.add(p2_5)
         self.platforms.add(p3)
-        self.platforms.add(p4)
+        self.platforms.add(p4_1)
+        self.platforms.add(p4_2)
+        self.platforms.add(p4_3)
         self.platforms.add(p5)
         self.platforms.add(p6)
         self.platforms.add(p7)
         self.platforms.add(p8)
         self.platforms.add(p9)
         self.platforms.add(p10)
+        self.graph_platforms.add(p2_1r)
+        self.graph_platforms.add(p2_2r)
+        self.graph_platforms.add(p2_3r)
+        self.graph_platforms.add(p2_4r)
+        self.graph_platforms.add(p2_5r)
+        self.graph_platforms.add(p4_1r)
+        self.graph_platforms.add(p4_2r)
+        self.graph_platforms.add(p4_3r)
         self.moving_platforms_vertical.add(p5)
         self.moving_platforms_vertical.add(p6)
         self.moving_platforms_vertical.add(p7)
@@ -90,47 +132,7 @@ class Game:
         e1 = Mob(560, 600, 320)
         self.all_sprites.add(e1)
         self.mobs.add(e1)
-
-
-       ### OLD LEVEL LAYOUT ###
-        # self.all_sprites = pg.sprite.Group()
-        # self.platforms = pg.sprite.Group()
-        # self.mobs = pg.sprite.Group()
-        # self.moving_platforms_vertical = pg.sprite.Group()
-        # self.moving_platforms_horizontal = pg.sprite.Group()
-        # self.graph_platforms = pg.sprite.Group()
-        # self.ground = pg.sprite.Group()
-        # self.player = Player(self)
-        # self.all_sprites.add(self.player)
-        # ground_plat = Platform(0, HEIGHT-20, WIDTH, 20)
-        # self.all_sprites.add(ground_plat)
-        # self.ground.add(ground_plat)
-        # wall_plat1 = Platform(-20, HEIGHT-250, 60, 250)
-        # self.all_sprites.add(wall_plat1)
-        # self.platforms.add(wall_plat1)
-        # wall_plat2 = Platform(WIDTH-40, HEIGHT-250, 60, 250)
-        # self.all_sprites.add(wall_plat2)
-        # self.platforms.add(wall_plat2)
-        # plat1 = Platform(int(WIDTH*.3), HEIGHT-60, 80, 20)
-        # self.all_sprites.add(plat1)
-        # self.platforms.add(plat1)
-        # plat2 = MovingPlatformVertical(int(WIDTH*.6), HEIGHT-120, 80, 20)
-        # self.all_sprites.add(plat2)
-        # self.platforms.add(plat2)
-        # self.moving_platforms_vertical.add(plat2)
-        # plat3 = MovingPlatformHorizontal(int(WIDTH*.85), HEIGHT-120, 80, 20)
-        # self.all_sprites.add(plat3)
-        # self.platforms.add(plat3)
-        # self.moving_platforms_horizontal.add(plat3)
-        # graph_plat = GraphPlatform(100, HEIGHT-150, 150, 150)
-        # self.all_sprites.add(graph_plat)
-        # # self.platforms.add(graph_plat)
-        # self.graph_platforms.add(graph_plat)
-        # mob1 = Mob(int(WIDTH*.4), HEIGHT-60, 80, 20, 600)
-        # self.all_sprites.add(mob1)
-        # self.mobs.add(mob1)
-
-      
+    
 
     def run (self):
         # Runs the game
@@ -191,13 +193,20 @@ class Game:
             if ramp_collision:
                 self.player.velocity.y = 0
                 relative_x = self.player.rect.x - ramp_collision[0].rect.x
-                self.player.position.y = HEIGHT - (relative_x + 15)
+                if ramp_collision[0].slope == "Up":
+                    pos_height = relative_x  + 20 # could use self.player.rect.width # but it makes the player bounce
+                if ramp_collision[0].slope == "Down":
+                    pos_height = 80 - relative_x
+                target_y_pos = ramp_collision[0].rect.y + 85 - pos_height
+                #if self.player.rect.bottom > target_y_pos: # Also made the player bounce.
+                self.player.position.y = target_y_pos
+
                 self.player.is_airborn = False
                 self.player.is_grounded = True
                 self.player.has_doublejump = True
             # Check for non-ground platform collisions first.
             elif platform_collisions:
-                if self.player.position.y <= (platform_collisions[0].rect.top + 15):
+                if self.player.position.y <= (platform_collisions[0].rect.top + 20):
                     # Positions the player on the first platform they've collided with, and set them to be "grounded".
                     self.player.position.y = platform_collisions[0].rect.top
                     self.player.velocity.y = 0
@@ -231,7 +240,7 @@ class Game:
                     # self.player.position.y = ramp_collision[0].
                     self.player.velocity.y = 0
                     relative_x = self.player.rect.x - ramp_collision[0].rect.x
-                    self.player.position.y = HEIGHT - (relative_x + 15)
+                    self.player.position.y = HEIGHT - relative_x
                     self.player.is_airborn = False
                     self.player.is_grounded = True
                     self.player.has_doublejump = True

@@ -174,10 +174,14 @@ class Platform(pg.sprite.Sprite):
     # the line-graph (the pointy ground) may also use this platform type if we can implement it. If 
     # we do we'll likely need to look at mask collision so the player can walk up the hills.
     
-    def __init__ (self, x, y, w, h):
+    def __init__ (self, x, y, w, h, img=None):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w,h))
-        self.image.fill(GRAY)
+        if img == None:
+            self.image = pg.Surface((w,h))
+            self.image.fill(GRAY)
+        else:    
+            self.image = img
+            self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -186,9 +190,13 @@ class GraphPlatform(pg.sprite.Sprite):
     # Class for the Line Graph platforms, which will almost always be some kind of angle. Testing
     # for collision stuff.
 
-    def __init__(self, x, y, w, h):
+    def __init__(self, x, y, w, h, slope):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(path.join(image_folder, "mask_test.png")).convert()
+        self.slope = slope
+        if self.slope == "Down":
+            self.image = pg.image.load(path.join(image_folder, "Slope_Down.png")).convert()
+        if self.slope == "Up":
+            self.image = pg.image.load(path.join(image_folder, "Slope_Up.png")).convert()
         self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         self.rect.x = x
