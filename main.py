@@ -52,7 +52,7 @@ class Game:
         self.out_of_bounds.add(bound_floor)
 
         # Platforms that player can jump and run on
-        p1 = Platform(0, 500, 160, 500)
+        p1 = Platform(0, 500, 160, 500, img="Plat1.png")
         p2_1 = Platform(160, 840, 80, 500)
         p2_2 = Platform(240, 760, 80, 500)
         p2_3 = Platform(320, 760, 80, 500)
@@ -63,7 +63,7 @@ class Game:
         p2_3r = GraphPlatform(320, 760-80, 80, 80, "Down")
         p2_4r = GraphPlatform(400, 760-80, 80, 80, "Up")
         p2_5r = GraphPlatform(480, 680-80, 80, 80, "Up")
-        p3 = Platform(560, 600, 320, 500)
+        p3 = Platform(560, 600, 320, 500, img="Plat3.png")
         p4_1 = Platform(880, 680, 80, 500)
         p4_2 = Platform(960, 760, 80, 500)
         p4_3 = Platform(1040, 760, 80, 500)
@@ -75,7 +75,7 @@ class Game:
         p7 = MovingPlatformVertical(1520, 400, 80, 600)
         p8 = MovingPlatformHorizontal(1200, 300, 160, 30, i=-1)
         p9 = MovingPlatformHorizontal(1520, 150, 160, 30, i=1)
-        p10 = Platform(1550, 50, 50, 20)
+        p10 = Platform(1550, 50, 50, 20, img="Plat_Victory.png")
         self.all_sprites.add(p1)
         self.all_sprites.add(p2_1)
         self.all_sprites.add(p2_2)
@@ -263,8 +263,9 @@ class Game:
                     self.player.acceleration.x = 0
 
 
-        if self.player.position.x >= 1500 and self.player.position.y <= 50:
-            # self.game_end() or go to the next level
+        if self.player.position.x >= 1550 and self.player.position.y <= 50:
+            self.game_end() #or go to the next level
+            
 
 
 

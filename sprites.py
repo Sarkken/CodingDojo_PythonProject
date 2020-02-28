@@ -178,9 +178,9 @@ class Platform(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self)
         if img == None:
             self.image = pg.Surface((w,h))
-            self.image.fill(GRAY)
+            self.image.fill(GRAPH_GREEN)
         else:    
-            self.image = img
+            self.image = pg.image.load(path.join(image_folder, img)).convert()
             self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -211,8 +211,9 @@ class MovingPlatformVertical(pg.sprite.Sprite):
     
     def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE, i=1): 
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w,h))
-        self.image.fill(GREEN)
+        self.image = pg.image.load(path.join(image_folder, "Plat_vertical.png")).convert()
+        # self.image.fill(GREEN)
+        self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
@@ -250,8 +251,9 @@ class MovingPlatformHorizontal(pg.sprite.Sprite):
     
     def __init__ (self, x, y, w, h, v=PLATFORM_VELOCITY, d=PLATFORM_DISTANCE, i=1):
         pg.sprite.Sprite.__init__(self)
-        self.image = pg.Surface((w,h))
-        self.image.fill(GREEN)
+        self.image = pg.image.load(path.join(image_folder, "Plat_horizontal.png")).convert()
+        # self.image.fill(GREEN)
+        self.image.set_colorkey(MASK)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
