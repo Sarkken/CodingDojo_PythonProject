@@ -18,6 +18,8 @@ class Game:
         self.clock = pg.time.Clock()
         self.running = True
         self.jump_sound = pg.mixer.Sound(path.join(audio_folder,'Jump10.wav'))
+        self.hit_sound = pg.mixer.Sound(path.join(audio_folder, 'Hit.wav'))
+        self.hit_sound.set_volume(100) #set volume?
         
 
     def new (self):
@@ -183,8 +185,10 @@ class Game:
             if hits:
                 if self.player.position.x < hits[0].position.x:
                     self.player.position += vector(-MOB_KNOCKBACK, 0)
+                    self.hit_sound.play()
                 else:
                     self.player.position += vector(MOB_KNOCKBACK, 0)
+                    self.hit_sound.play()
 
 
         # Checks collisions on player falling
