@@ -263,6 +263,11 @@ class Game:
                     self.player.acceleration.x = 0
 
 
+        if self.player.position.x >= 1500 and self.player.position.y <= 50:
+            # self.game_end() or go to the next level
+
+
+
     def draw (self):
         # Draws all the updates
         self.screen.fill(WHITE)
