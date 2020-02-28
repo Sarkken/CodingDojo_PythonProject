@@ -470,10 +470,11 @@ class Game:
                 if event.type == pg.QUIT:
                     pg.quit()
                     quit()
-                    
-            self.screen.fill(DEATH_RED)
+            bsod = pg.image.load(path.join(image_folder,"fake-bsod.gif")).convert()
+            self.screen.blit(pg.transform.scale(bsod, (1600,900)), (0,0))
+            # self.screen.fill(DEATH_RED)
             largeText = pg.font.Font('freesansbold.ttf',130)
-            TextSurf = largeText.render("You Died!", True, BLACK)
+            TextSurf = largeText.render("You Died!", True, WHITE)
             TextRect = TextSurf.get_rect()
             TextRect.center = ((WIDTH/2),(HEIGHT/2)- 200)
             self.screen.blit(TextSurf, TextRect)
